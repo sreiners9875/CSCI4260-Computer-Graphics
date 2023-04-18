@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+</head>
+
+<body>
+  <div id="app">
+    <div>
+      <img src="bridge.jpg" class="main-image" width="320" height="480">
+      <canvas id="canv" width="320px" height="480px"></canvas>
+    </div>
+  </div>
+
+  <script>
+    //Grab the data from a new image
+    let img = new Image();
+    img.src = "./bridge.jpg";
+    img.onload = () => {
+      main();
+    };
+    img.onerror = () => {
+      document.body.appendChild(new Text("Could not load the image."));
+    };
+
+    //Called once we have image data
+    function main() {
+
+      //Get the context of the canvas
+      ctxStart = document.getElementById("canv").getContext("2d");
+
+      //Draw the original image to the canvas
+      ctxStart.drawImage(img, 0, 0, 320, 480);
+
+      //Get the pixels of the canvas
+      canvasPixels = ctxStart.getImageData(0, 0, ctxStart.canvas.width, ctxStart.canvas.height)
+
+
+      for (let y = 0; y < ctxStart.canvas.height; y++) {
+        for (let x = 0; x < ctxStart.canvas.width; x++) {
+          //The data is linear, get the x,y coordinate
+          //We mulitply by 4 since it is stored as rgba
+          let pixelIndex = ctxStart.canvas.width * 4 * y + x * 4;
+
+          //Convert to grayscale on half the image
+          if (x < ctxStart.canvas.width / 2) {
+            let r = canvasPixels.data[pixelIndex];
+            let g = canvasPixels.data[pixelIndex + 1];
+            let b = canvasPixels.data[pixelIndex + 2];
+
+            //Trivial grayscale conversion using the red channel
+            g = r;
+            b = r;
+
+            //Update the pixel data
+            canvasPixels.data[pixelIndex] = r;
+            canvasPixels.data[pixelIndex + 1] = g;
+            canvasPixels.data[pixelIndex + 2] = b;
+          }
+        }
+      }
+
+      //Set the pixel data
+      ctxStart.putImageData(canvasPixels, 0, 0);
+
+      //Draw onto the image
+      ctxStart.strokeStyle = "red";
+      ctxStart.strokeRect(10, 10, 100, 100);
+    }
+  </script>
+
+</body>
+
+</html>
