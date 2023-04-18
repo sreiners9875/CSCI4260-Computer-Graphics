@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ray Tracer</title>
+</head>
+
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    class Pixel {
+      constructor(r = 0, g = 0, b = 0) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+      }
+    }
+
+    class Image {
+      constructor(width, height) {
+        this.width = width;
+        this.height = height;
+        this.pixelData = [];
+        for (let rowIndex = 0; rowIndex < this.height; rowIndex++) {
+          let rowData = [];
+          this.pixelData.push(rowData);
+          for (let columnIndex = 0; columnIndex < this.width; columnIndex++) {
+            rowData.push(new Pixel());
+          }
+        }
+      }
+      setPixel(x, y, pixel) {
+        this.pixelData[x][y] = pixel;
+      }
+      getPixel(x, y) {
+        return this.pixelData[x][y];
+      }
+    }
+
+    class Sphere {
+      constructor(center, radius) {
+        this.center = center;
+        this.radius = radius;
+      }
+      intersect(o, d) {
+        let c = this.center;
+        let r = this.radius;
+
+        return new Vector3(0, 0, 0);
+        // // let A = d.x ** 2 + d.y ** 2 + d.y ** 2
+        // // let B = 2 * d.x * (o.x - c.x)
+        // //   + 2 * d.y * (o.y - c.y)
+        // //   + 2 * d.z * (o.x - c.z)
+        // // let C = o.x ** 2 + o.y ** 2 + o.z ** 2 + c.x ** 2 + c.y ** 2 + c.z ** 2
+        // //   - r ** 2
+        // //   - 2 * (o.x ** 2 * c.x ** 2) - 2 * o.y ** 2 * c.y ** 2 - 2 * o.z ** 2 * c.z ** 2
+
+        // let A = 1;
+        // let B = 2 * o.dot(d);
+        // let C = o.dot(o) - r ** 2;
+
+        // let discriminant = B ** 2 - 4 * A * C;
+        // let alt = 4*(o.dot(d)**2-o.dot(o)**2+r**2);
+        //  if (discriminant < 0) {
+        //   return undefined;
+        // }
+        // let sqrt = Math.sqrt(discriminant);
+        // let t1 = (-B - sqrt) / (2 * A)
+        // let t2 = (-B + sqrt) / (2 * A)
+        // let t2a = -o.dot(d)+r;
+        // let t1a = -o.dot(d)-r;
+        // t1=t1a;
+        // t2=t2a;
+
+        // let t;
+
+        // if (t1 > 0 && t2 > 0) {
+        //   t = Math.min(t1, t2);
+        // }
+        // else {
+        //   if (t1 > 0)
+        //     t = t1;
+        //   else
+        //     t = t2;
+        // }
+
+        // return new Vector3(o.x + t * d.x, o.y + t * d.y, o.z + t * d.z);
+      }
+    }
+
+    class Vector3 {
+      constructor(x = 0, y = 0, z = 0) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        Object.freeze(this);
+      }
+      normalize() {
+        let length = this.length()
+        return new Vector3(this.x / length, this.y / length, this.z / length);
+      }
+      length() {
+        return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2)
+      }
+      dot(other) {
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+      }
+      cross(other) {
+        return new Vector3(this.y * other.z - this.z * other.y, this.z * other.x - this.x, other.z + this.x * other.y - this.y * other.x);
+      }
+      add(other) {
+        return new Vector3(this.x + other.x, this.y + other.y, this.z + other.z);
+      }
+      negate() {
+        return new Vector3(-this.x, -this.y, -this.z);
+      }
+      minus(other) {
+        return this.add(other.negate());
+      }
+    }
+
+    function main() {
+      let width = 100;
+      let height = 100;
+      let image = new Image(width, height);
+
+      let canvas = document.querySelector("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      let ctx = canvas.getContext("2d")
+
+      let v3 = new Vector3(1, 2, 3);
+      v3.x = 0;
+      console.log(v3)
+      let v4 = v3.normalize()
+      console.log(v4)
+
+      console.log(new Vector3(1, 1, 1).dot(new Vector3(0, 2, 0)))
+      console.log(new Vector3(0, 0, 1).cross(new Vector3(1, 0, 0)))
+
+      let sphere = new Sphere(new Vector3(-2, 0, 0), 1);
+      let rayOrigin = new Vector3(0, 0, 0);
+      let rayDirection = new Vector3(-1, 0, 0);
+      let collision = sphere.intersect(rayOrigin, rayDirection)
+      console.log(collision);
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          if (x == 50 && y == 52) {
+            console.log("stop")
+          }
+
+          let startX = x - width / 2;
+          let startY = y - height / 2;
+          let origin = new Vector3(startX, startY, 51);
+          let direction = new Vector3(0, 0, -1);
+          let s = new Sphere(new Vector3(0, 0, - 51), 50);
+          let c = s.intersect(origin, direction);
+
+          let rayTracedPixel = new Pixel(0, 0, 0);
+
+          image.setPixel(x, y, rayTracedPixel);
+
+
+          let pixel = image.getPixel(x, y);
+          let pixelString = `rgb(${pixel.r}, ${pixel.g}, ${pixel.b})`;
+          ctx.fillStyle = pixelString;
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+
+
+
+      // for (let y = 0; y < height; y++) {
+      //   for (let x = 0; x < width; x++) {
+      //     if (x == 50 && y == 52) {
+      //       console.log("stop")
+      //     }
+      //     let startX = x - width / 2;
+      //     let startY = y - height / 2;
+      //     let origin = new Vector3(startX, startY, 51);
+      //     let direction = new Vector3(0, 0, -1);
+      //     let s = new Sphere(new Vector3(0, 0, - 51), 50);
+      //     let c = s.intersect(origin, direction);
+
+
+      //     let rayTracedPixel = new Pixel(0, 0, 0);
+      //     if (c) {
+      //       let normal = c.minus(new Vector3(0,0,-51));
+
+      //       let nNormalized = normal.normalize();
+      //       let directionToSun = new Vector3(0, 1, 0);
+      //       let brightness = nNormalized.dot(directionToSun);
+      //       brightness *= -1
+      //       if (brightness < 0)
+      //         brightness = 0;
+      //       rayTracedPixel = new Pixel(255 * brightness, 255 * brightness, 255 * brightness);
+
+      //     }
+      //     else {
+      //       rayTracedPixel = new Pixel(0, 0, 0);
+
+      //     }
+
+      //     image.setPixel(x, y, rayTracedPixel);
+
+
+      //     let pixel = image.getPixel(x, y);
+      //     let pixelString = `rgb(${pixel.r}, ${pixel.g}, ${pixel.b})`;
+      //     ctx.fillStyle = pixelString;
+      //     ctx.fillRect(x, y, 1, 1);
+      //   }
+      // }
+
+    }
+
+    main();
+  </script>
+</body>
+
+</html>

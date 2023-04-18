@@ -1,0 +1,128 @@
+<!-- This is a modification of the tutorial found here: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Getting_started_with_WebGL -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebGL - Getting Started</title>
+</head>
+
+<body>
+  <!-- If you want to work at a higher level, THREE.js -->
+  <!-- The only element we need. This is where we draw. -->
+  <canvas id="glcanvas" style="width:640px;height:480px"></canvas>
+
+  <!-- Loading helper functions for the creation of matrices -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+  <script src="./vertexShader.js"></script>
+  <script src="./fragmentShader.js"></script>
+  <script>
+
+    //We nede to make room for our shaders
+    //We need to compile the shaders
+    function loadShader(gl, type, source) {
+      //Allocate memory for the type of shader
+      const shader = gl.createShader(type);
+      //Assign the code as a string
+      gl.shaderSource(shader, source);
+
+      //Tell the GPU to compile the shader
+      gl.compileShader(shader);
+      return shader;
+    }
+
+    //Get the 3d context of the element.
+    const gl = document.querySelector("#glcanvas").getContext("webgl");
+    /**
+     * End of part 1 - HTML & JS Setup
+     */
+
+    //Allocate memory for a shader on the GPU
+    const shaderProgram = gl.createProgram();
+
+    //Assign the compiled code to a memory slot on the GPU
+    gl.attachShader(shaderProgram, loadShader(gl, gl.VERTEX_SHADER, vsSource));
+    gl.attachShader(shaderProgram, loadShader(gl, gl.FRAGMENT_SHADER, fsSource));
+
+    // Do the linking on the GPU
+    gl.linkProgram(shaderProgram);
+
+
+    /**
+     * End part 2 - Compile Shaders
+     */
+
+    // Has 4 vetices, notably they are in 2D
+    // Using a triangle strip to specify the two triangles
+    const positions = [
+      1.0, 1.0, 
+      -1.0, 1.0, 
+      1.0, -1.0, 
+      -1.0, -1.0];
+
+      // Create a memory slot for the vertices
+    const positionBuffer = gl.createBuffer();
+
+    //Put this information of the GPU.
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    
+
+    //Data we are going to bind to the shaders
+    //There is a variable we need to bind, it is called aVertexPosition
+    let vertexPosition = gl.getAttribLocation(shaderProgram, "aVertexPosition")
+    gl.vertexAttribPointer(vertexPosition, 2, gl.FLOAT, false, 0, 0);
+
+    //Setup our matrices
+    //First is the projection matrix
+    //Degrees into radians
+    const fieldOfView = (45 * Math.PI) / 180; // in radians
+    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    const projectionMatrix = mat4.create();
+    mat4.perspective(projectionMatrix, fieldOfView, aspect, .1, 100.0);
+
+    //Create the model view matrix
+    const modelViewMatrix = mat4.create();
+    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -5]);
+
+    gl.useProgram(shaderProgram);
+
+    /**
+     * Done with part 3 - Vertices and Matrices
+     */
+
+     //Attach the per-frame information
+    gl.enableVertexAttribArray(gl.getAttribLocation(shaderProgram, "aVertexPosition"));
+    gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "uProjectionMatrix"), false, projectionMatrix);
+    gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "uModelViewMatrix"), false, modelViewMatrix);
+
+    //The actual draw calls
+    //We want to use a depth test on the z buffer
+    gl.enable(gl.DEPTH_TEST);
+    //What does it mean to "win" on the GPU
+    //<=
+    //Notably it is not < (although it doesn't matter)
+    gl.depthFunc(gl.LEQUAL);
+
+    //Set our default z-buffer color
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    //Actually clear the buffers
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    //Actually clears the depth
+    gl.clearDepth(1.0);
+
+    //Our draw 
+    const indeces = [0, 1, 2, 1,2, 3];
+    //Create our vertex lists
+    const indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indeces), gl.STATIC_DRAW)
+    //gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+     gl.enable(gl.CULL_FACE);
+     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+  </script>
+</body>
+
+</html>
