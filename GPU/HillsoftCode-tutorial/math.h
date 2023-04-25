@@ -41,4 +41,68 @@ inline Vector operator+(const Vector &v1, const Vector &v2)
                   v1.z + v2.z);
 }
 
-#endif
+inline Vector operator-(const Vector &v1, const Vector &v2)
+{
+    return Vector(v1.x - v2.x,
+                  v1.y - v2.y,
+                  v1.z - v2.z);
+}
+
+inline Vector operator*(const Vector &v1, const Vector &v2)
+{
+    return Vector(v1.x * v2.x,
+                  v1.y * v2.y,
+                  v1.z * v2.z);
+}
+
+inline Vector operator*(const Vector &v, float f)
+{
+    return Vector(v.x * f,
+                  v.y * f,
+                  v.z * f);
+}
+
+inline Vector operator*(float f, const Vector &v)
+{
+    return Vector(f * v.x,
+                  f * v.y,
+                  f * v.z);
+}
+
+inline Vector operator/(const Vector &v1, const Vector &v2)
+{
+    return Vector(v1.x / v2.x,
+                  v1.y / v2.y,
+                  v1.z / v2.z);
+}
+
+inline Vector operator/(const Vector &v, float f)
+{
+    return Vector(v.x / f,
+                  v.y / f,
+                  v.z / f);
+}
+
+inline Vector operator/(float f, const Vector &v)
+{
+    return Vector(f / v.x,
+                  f / v.y,
+                  f / v.z);
+}
+
+typedef Vector Point;
+struct Vector2
+{
+    float u, v;
+
+    Vector2();
+    Vector2(const Vector2 &v);
+    Vector2(float u, float v);
+    Vector2(float f);
+
+    virtual ~Vector2();
+
+    Vector2 &operator=(const Vector2 &v);
+};
+
+#endif // MATHS_H

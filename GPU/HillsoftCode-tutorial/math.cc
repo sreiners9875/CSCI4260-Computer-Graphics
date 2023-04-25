@@ -70,3 +70,87 @@ Vector cross(Vector v1, Vector v2)
                   v1.z * v2.x - v1.x * v2.z,
                   v1.x * v2.y - v1.y * v2.x);
 }
+
+Vector &Vector::operator=(const Vector &v)
+{
+    x = v.x;
+    y = v.y;
+    z = v.z;
+
+    return *this;
+}
+
+Vector &Vector::operator+=(const Vector &v)
+{
+    x += v.x;
+    y += v.y;
+    z += v.z;
+    return *this;
+}
+
+Vector &Vector::operator-=(const Vector &v)
+{
+    x -= v.x;
+    y -= v.y;
+    z -= v.z;
+
+    return *this;
+}
+
+Vector &Vector::operator*=(float f)
+{
+    x *= f;
+    y *= f;
+    z *= f;
+
+    return *this;
+}
+
+Vector &Vector::operator/=(float f)
+{
+    x /= f;
+    y /= f;
+    z /= f;
+
+    return *this;
+}
+
+Vector Vector::operator-() const
+{
+    return Vector(-x, -y, -z);
+}
+
+Vector2::Vector2()
+    : u(0.0f),
+      v(0.0f)
+{
+}
+
+Vector2::Vector2(const Vector2 &v)
+    : u(v.u),
+      v(v.v)
+{
+}
+
+Vector2::Vector2(float u, float v)
+    : u(u),
+      v(v)
+{
+}
+
+Vector2::Vector2(float f)
+    : u(f),
+      v(f)
+{
+}
+
+Vector2::~Vector2()
+{
+}
+
+Vector2 &Vector2::operator=(const Vector2 &v)
+{
+    u = v.u;
+    this->v = v.v;
+    return *this;
+}
