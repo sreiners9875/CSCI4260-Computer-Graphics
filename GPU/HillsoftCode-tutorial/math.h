@@ -40,3 +40,5 @@ inline Vector operator+(const Vector &v1, const Vector &v2)
                   v1.y + v2.y,
                   v1.z + v2.z);
 }
+
+#endif
