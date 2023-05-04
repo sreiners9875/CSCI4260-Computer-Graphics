@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ray Tracer</title>
+  <style>
+    html,
+    body {
+      background-color: black;
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    /* See https://www.w3schools.com/css/tryit.asp?filename=trycss3_flexbox_perfect_center */
+    .flex-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="flex-container">
+    <canvas id="canvas"></canvas>
+  </div>
+  <script>
+    document.querySelector("#canvas").addEventListener("mousemove", mousemove)
+    function mousemove(e) {
+      document.title = (e.offsetX + " " + e.offsetY)
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('index');
+    const widthParam = urlParams.get('width');
+    const heightParam = urlParams.get('height')
+    const samplesParam = urlParams.get('samples')
+    const jitterParam = urlParams.get('jitter')
+    
+    sceneIndex = myParam ? myParam : 0;
+    width = widthParam ? parseInt(widthParam) : 400;
+    height = heightParam ? parseInt(heightParam) : 400
+    samples = samplesParam ? samplesParam : 1
+    jitterAmount = jitterParam ? jitterParam : 0
+    console.log(samples)
+    //console.log(sceneIndex)
+  </script>
+  <script src="vector.js"></script>
+  <script src="sphere.js"></script>
+  <script src="vertex.js"></script>
+  <script src="light.js"></script>
+  <script src="camera.js"></script>
+  <script src="collision.js"></script>
+  <script src="triangle.js"></script>
+  <script src="mesh.js"></script>
+  <script src="rt-object.js"></script>
+  <script src="shader.js"></script>
+  <script src="scene.js"></script>
+  <script src="scenes.js"></script>
+  <script src="ray-tracer.js"></script>
+</body>
+
+</html>
